@@ -1,0 +1,40 @@
+services:
+  vision-mcp:
+    build: .
+    image: vision-mcp:1.0.0
+    container_name: vision-mcp
+    restart: unless-stopped
+    group_add:
+      - "${VISION_IMAGE_GID:-10001}"
+    ports:
+      - "${MCP_BIND_IP:-127.0.0.1}:${MCP_PORT:-8102}:8000"
+    environment:
+      OPENAI_API_KEY: "${OPENAI_API_KEY:?Set OPENAI_API_KEY in .env}"
+      OPENAI_MODEL: "${OPENAI_MODEL:-gpt-4.1-mini}"
+      VISION_MCP_TOKEN: "${VISION_MCP_TOKEN:?Set VISION_MCP_TOKEN in .env}"
+      MCP_HOST: "0.0.0.0"
+      MCP_PORT: "8000"
+      SERVER_IP: "${SERVER_IP:-127.0.0.1}"
+      MCP_ALLOWED_HOSTS: "${MCP_ALLOWED_HOSTS:-localhost:*,127.0.0.1:*}"
+      VISION_IMAGE_ROOT: /images
+      VISION_USAGE_DB: /data/usage.sqlite3
+      VISION_MAX_OUTPUT_TOKENS: "${VISION_MAX_OUTPUT_TOKENS:-800}"
+      VISION_MAX_CALLS_PER_DAY: "${VISION_MAX_CALLS_PER_DAY:-20}"
+      VISION_MAX_CALLS_PER_10_MIN: "${VISION_MAX_CALLS_PER_10_MIN:-3}"
+    volumes:
+      - type: bind
+        source: "${VISION_IMAGE_DIR:-./images}"
+        target: /images
+        read_only: true
+        bind:
+          create_host_path: false
+      - usage-data:/data
+    read_only: true
+    tmpfs:
+      - /tmp:size=16m,mode=1777
+    cap_drop: [ALL]
+    security_opt: ["no-new-privileges:true"]
+    pids_limit: 64
+    mem_limit: 512m
+volumes:
+  usage-data:

@@ -1,0 +1,5 @@
+mcp==2.3.0
+openai==3.24.0
+Pillow==12.1.1
+httpx2==2.13.1
+uvicorn==0.54.0

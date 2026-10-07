@@ -218,3 +218,12 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
+
+# Vision secrets, images and usage data
+.env
+.env.*
+!.env.example
+images/*
+!images/.gitkeep
+*.sqlite3
+*.sqlite3-*
